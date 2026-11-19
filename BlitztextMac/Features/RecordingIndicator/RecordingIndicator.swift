@@ -73,9 +73,10 @@ final class RecordingIndicatorController {
         case .success:
             guard panel?.isVisible == true, !isHiding else { return }
             model.status = status
-            hide(after: .milliseconds(900))
+            // Long enough to read "Eingefügt" after looking back from the text.
+            hide(after: .milliseconds(1_800))
         case .copied:
-            // Longer than "Fertig": it says the text did not go where it was meant to.
+            // Longer than "Eingefügt": it says the text did not go where it was meant to.
             model.status = status
             show(placing: panel?.isVisible != true)
             hide(after: .milliseconds(2_600))
@@ -409,7 +410,7 @@ struct RecordingPill: View {
             Image(systemName: "checkmark")
                 .font(.ui(12, .bold))
                 .foregroundStyle(Self.lilac)
-            Text("Fertig")
+            Text("Eingef\u{00FC}gt")
                 .font(.ui(12, .semibold))
                 .foregroundStyle(.white.opacity(0.85))
         case .copied:
@@ -441,7 +442,7 @@ struct RecordingPill: View {
         switch model.status {
         case .recording: return "Aufnahme l\u{00E4}uft. Klicken stoppt sie."
         case .processing: return "Blitztext schreibt"
-        case .success: return "Fertig"
+        case .success: return "Eingef\u{00FC}gt"
         case .copied: return "Nicht eingef\u{00FC}gt, der Text liegt in der Zwischenablage"
         case .meeting: return "Meeting wird aufgenommen. Klicken \u{00F6}ffnet die Meeting-Seite."
         case .error(_, let message): return message

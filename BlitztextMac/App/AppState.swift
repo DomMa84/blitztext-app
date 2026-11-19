@@ -974,7 +974,7 @@ final class AppState {
             }
             guard let self else { return }
             self.pasteAtCursor(output, target: target) { [weak self] in
-                // The app did not come to the front: not "Fertig", the text waits on the
+                // The app did not come to the front: not "Eingefügt", the text waits on the
                 // clipboard, and there is nothing to replace with the word-for-word text.
                 guard let self else { return }
                 self.lastInsertion = nil
