@@ -879,6 +879,9 @@ struct CustomizeSettingsView: View {
                 }
             }
 
+            // MARK: Speicherort
+            ModelStorageSection(appState: appState)
+
             // MARK: KI-Modi
             SettingsSection(title: "KI-Modi") {
 

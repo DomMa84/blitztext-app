@@ -60,6 +60,8 @@ final class AppState {
     var onMenuBarStatusChange: ((MenuBarStatus) -> Void)?
     /// Tells the status item whether to show the "new" dot.
     var onWhatsNewChange: ((Bool) -> Void)?
+    /// "Los geht's" or "Später" in the setup assistant: its window closes.
+    @ObservationIgnored var onSetupAssistantFinished: (() -> Void)?
     private var whatsNewTask: Task<Void, Never>?
     private var activeLaunchSource: WorkflowLaunchSource = .manual
     private var activePasteTarget: PasteTarget?
@@ -166,8 +168,8 @@ final class AppState {
         _ = aiProvider
         return TextRewriter.canRewrite(engine: appSettings.rewriteEngine)
     }
-    /// The setup assistant opens until it is finished or put off with "Später". Granting a
-    /// permission closes the popover, so showing it once is not enough.
+    /// The setup assistant opens in its own window at launch until it is finished or put off
+    /// with "Später" (closing the window counts as "Später").
     var shouldShowOnboarding: Bool {
         (!appSettings.hasSeenOnboarding || keepsSetupAssistantOpen) && !isSetupComplete
     }
@@ -388,7 +390,21 @@ final class AppState {
     }
 
     var selectedLocalModelIsInstalled: Bool {
-        LocalTranscriptionService.isModelInstalled(selectedLocalModelName)
+        // Read so views update when the models move to another folder.
+        _ = modelStorageRevision
+        return LocalTranscriptionService.isModelInstalled(selectedLocalModelName)
+    }
+
+    /// Counts moves of the models folder (`ModelStorageSection`): what is installed is read
+    /// from the disk, so a move must tell the views to look again.
+    var modelStorageRevision = 0
+
+    /// The models moved to another folder: installed states are read again.
+    func modelStorageChanged() {
+        modelStorageRevision += 1
+        LocalModelStore.shared.refresh()
+        localModelDownloadErrorText = nil
+        localModelDownloadStatusText = nil
     }
 
     var isDownloadingLocalModel: Bool {
@@ -594,6 +610,11 @@ final class AppState {
 
     func installSelectedLocalModel() {
         guard !isDownloadingLocalModel else { return }
+        // The chosen drive is unplugged: a download now would land on the Mac's own disk.
+        if let message = ModelStorageLocation.unavailableMessage {
+            localModelDownloadErrorText = message
+            return
+        }
 
         let modelName = selectedLocalModelName
         localModelDownloadProgress = 0
@@ -688,7 +709,9 @@ final class AppState {
         if let activeWorkflow, activeWorkflow.phase.isActive {
             page = .workflow
         } else if shouldShowOnboarding, !hasWorkInProgress {
-            page = .onboarding
+            // The assistant has a window of its own (`openSetupAssistant`); the menu shows
+            // the main page, whose "Einrichtung nötig" card opens that window.
+            page = .main
         } else if hasUnseenWhatsNew {
             page = .whatsNew
         } else if page == .workflow {
@@ -712,12 +735,14 @@ final class AppState {
         markOnboardingSeen()
         keepsSetupAssistantOpen = false
         page = .main
+        onSetupAssistantFinished?()
     }
 
-    /// From the "Einrichtung starten" card on the main page.
+    /// From the "Einrichtung starten" card on the main page: the assistant's window opens.
     func openSetupAssistant() {
         keepsSetupAssistantOpen = true
-        page = .onboarding
+        page = .main
+        NotificationCenter.default.post(name: .openSetupAssistant, object: nil)
     }
 
     /// A finished setup counts as seen however it was reached, so "What's new" works and the
@@ -1297,6 +1322,7 @@ extension Notification.Name {
     static let showWhatsNew = Notification.Name("showWhatsNew")
     static let showPopover = Notification.Name("showPopover")
     static let openSettings = Notification.Name("openSettings")
+    static let openSetupAssistant = Notification.Name("openSetupAssistant")
 }
 
 struct LastInsertion {

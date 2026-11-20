@@ -24,6 +24,8 @@
 	<string>Blitztext benötigt Mikrofon-Zugriff für die Sprach-Transkription.</string>
 	<key>NSAudioCaptureUsageDescription</key>
 	<string>Blitztext nimmt den Ton eines Online-Meetings auf, damit es auf deinem Mac mitgeschrieben werden kann. Der Ton verlässt den Mac nicht.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Blitztext legt die Sprachmodelle auf dem Laufwerk ab, das du in den Einstellungen unter Modelle als Speicherort gewählt hast.</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>CFBundleIconFile</key>

@@ -15,10 +15,11 @@ struct BlitztextMacApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSWindowDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private var settingsWindow: NSWindow?
+    private var setupWindow: NSWindow?
     private let menuBarStatusController = MenuBarStatusController()
     let appState = AppState()
     private lazy var recordingIndicator = RecordingIndicatorController(appState: appState)
@@ -141,6 +142,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appState.onWhatsNewChange = { [weak self] unseen in
             self?.menuBarStatusController.showsNewBadge = unseen
         }
+        appState.onSetupAssistantFinished = { [weak self] in
+            self?.closeSetupAssistant()
+        }
         menuBarStatusController.showsNewBadge = appState.hasUnseenWhatsNew
         appState.hotkeyService.start()
         appState.appUpdateService.startIfConfigured()
@@ -168,6 +172,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             self,
             selector: #selector(openSettings),
             name: .openSettings,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openSetupAssistant),
+            name: .openSetupAssistant,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -252,6 +262,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
         NSApp.activate(ignoringOtherApps: true)
         settingsWindow?.makeKeyAndOrderFront(nil)
+    }
+
+    /// The setup assistant in a window of its own, at the first launch and from the
+    /// "Einrichtung starten" card. Unlike the popover it stays open while System Settings is
+    /// in front for a permission, and it grows with its steps.
+    @objc private func openSetupAssistant() {
+        popover.performClose(nil)
+        appState.isPopoverShown = false
+
+        if setupWindow == nil {
+            let hosting = NSHostingController(rootView: SetupAssistantWindow(appState: appState))
+            // The window takes the assistant's height and follows it, e.g. when the download
+            // progress appears.
+            hosting.sizingOptions = [.minSize, .intrinsicContentSize, .maxSize, .preferredContentSize]
+            let window = NSWindow(contentViewController: hosting)
+            window.title = "Blitztext einrichten"
+            window.styleMask = [.titled, .closable, .miniaturizable]
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+            window.center()
+            setupWindow = window
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        setupWindow?.makeKeyAndOrderFront(nil)
+    }
+
+    /// "Los geht's" or "Später": the window goes, and with it the assistant's checks.
+    private func closeSetupAssistant() {
+        guard let window = setupWindow else { return }
+        setupWindow = nil
+        window.close()
+    }
+
+    nonisolated func windowWillClose(_ notification: Notification) {
+        let closing = (notification.object as? NSWindow).map(ObjectIdentifier.init)
+        MainActor.assumeIsolated {
+            guard let closing, let setupWindow, ObjectIdentifier(setupWindow) == closing else { return }
+            self.setupWindow = nil
+            // Closing the window counts as "Später": the assistant does not open by itself
+            // again, the "Einrichtung nötig" card on the main page brings it back.
+            if appState.shouldShowOnboarding {
+                appState.finishSetupAssistant()
+            }
+        }
     }
 
     private func transcribeAudioFile(_ url: URL) {
@@ -391,8 +445,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     private func showOnboardingIfNeeded() {
         guard appState.shouldShowOnboarding else { return }
-        appState.prepareForPopoverPresentation()
-        showPopover()
+        openSetupAssistant()
     }
 
     private func showPopover() {

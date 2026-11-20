@@ -52,8 +52,22 @@ final class LocalModelStore {
         LocalModelVariant.all.last { state(of: $0) == .installed && $0.support() == .available }
     }
 
+    /// A model is being downloaded; the models folder must not move meanwhile.
+    var isDownloading: Bool { !tasks.isEmpty }
+
+    /// Reads again what is installed, after the models moved to another folder.
+    func refresh() {
+        for variant in LocalModelVariant.all where tasks[variant.id] == nil {
+            states[variant.id] = Self.isInstalled(variant) ? .installed : .notInstalled
+        }
+    }
+
     func download(_ variant: LocalModelVariant) {
         guard tasks[variant.id] == nil, variant.support() == .available else { return }
+        if let message = ModelStorageLocation.unavailableMessage {
+            states[variant.id] = .failed(message)
+            return
+        }
         if let free = Self.freeSpace, free < variant.downloadSize + Self.spaceMargin {
             states[variant.id] = .failed(Failure.notEnoughSpace(needed: variant.downloadSize + Self.spaceMargin, free: free).localizedDescription)
             return
@@ -111,7 +125,8 @@ final class LocalModelStore {
     }
 
     nonisolated private static var freeSpace: Int64? {
-        let url = AppSupportPaths.appSupportDirectoryURL
+        // The drive the models go to, which may be an external one.
+        let url = AppSupportPaths.localModelsDirectoryURL
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return (try? url.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey]))?.volumeAvailableCapacityForImportantUsage
     }

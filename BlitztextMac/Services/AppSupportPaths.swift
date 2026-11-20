@@ -31,7 +31,13 @@ enum AppSupportPaths {
         appSupportDirectoryURL.appendingPathComponent(".history-pending")
     }
 
+    /// Every downloaded model lives below this folder: the default, or the folder chosen
+    /// under Einstellungen > Modelle > Speicherort (`ModelStorageLocation`).
     static var localModelsDirectoryURL: URL {
+        ModelStorageLocation.customDirectoryURL ?? defaultLocalModelsDirectoryURL
+    }
+
+    static var defaultLocalModelsDirectoryURL: URL {
         appSupportDirectoryURL.appendingPathComponent("models", isDirectory: true)
     }
 
