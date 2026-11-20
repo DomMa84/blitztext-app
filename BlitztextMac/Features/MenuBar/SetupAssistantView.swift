@@ -228,6 +228,7 @@ struct SetupAssistantView: View {
 
     private var modelDetail: String {
         if modelReady { return "\(modelName) ist installiert." }
+        if let message = ModelStorageLocation.unavailableMessage { return message }
         let size = LocalModelRating.rating(for: appState.selectedLocalModelName)?.sizeLabel
         let sizeText = size.map { ", \($0)" } ?? ""
         return "\(modelName)\(sizeText), einmalig. Danach erkennt Blitztext Sprache ohne Internet."
