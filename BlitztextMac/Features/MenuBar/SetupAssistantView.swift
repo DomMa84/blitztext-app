@@ -1,10 +1,23 @@
 import AVFoundation
 import SwiftUI
 
+/// The assistant as the content of its own window (`AppDelegate.openSetupAssistant`), drawn
+/// like the menu: same width, background and accent.
+struct SetupAssistantWindow: View {
+    @Bindable var appState: AppState
+
+    var body: some View {
+        SetupAssistantView(appState: appState)
+            .frame(width: MenuBarView.width)
+            .background { BlitztextSurface.windowBackground }
+            .tint(BlitztextTheme.accent)
+    }
+}
+
 /// First start: walks through what Blitztext needs, each step with its live state and its
-/// own button: microphone, Accessibility for pasting, the speech model. Granting a permission
-/// opens System Settings, which closes the popover; the assistant comes back on the next
-/// click until everything is done or the user picks "Später".
+/// own button: microphone, Accessibility for pasting, the speech model. It opens in a window
+/// of its own, which stays open while System Settings is in front for a permission, until
+/// everything is done or the user picks "Später" (or closes the window).
 struct SetupAssistantView: View {
     @Bindable var appState: AppState
 

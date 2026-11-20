@@ -60,6 +60,8 @@ final class AppState {
     var onMenuBarStatusChange: ((MenuBarStatus) -> Void)?
     /// Tells the status item whether to show the "new" dot.
     var onWhatsNewChange: ((Bool) -> Void)?
+    /// "Los geht's" or "Später" in the setup assistant: its window closes.
+    @ObservationIgnored var onSetupAssistantFinished: (() -> Void)?
     private var whatsNewTask: Task<Void, Never>?
     private var activeLaunchSource: WorkflowLaunchSource = .manual
     private var activePasteTarget: PasteTarget?
@@ -166,8 +168,8 @@ final class AppState {
         _ = aiProvider
         return TextRewriter.canRewrite(engine: appSettings.rewriteEngine)
     }
-    /// The setup assistant opens until it is finished or put off with "Später". Granting a
-    /// permission closes the popover, so showing it once is not enough.
+    /// The setup assistant opens in its own window at launch until it is finished or put off
+    /// with "Später" (closing the window counts as "Später").
     var shouldShowOnboarding: Bool {
         (!appSettings.hasSeenOnboarding || keepsSetupAssistantOpen) && !isSetupComplete
     }
@@ -688,7 +690,9 @@ final class AppState {
         if let activeWorkflow, activeWorkflow.phase.isActive {
             page = .workflow
         } else if shouldShowOnboarding, !hasWorkInProgress {
-            page = .onboarding
+            // The assistant has a window of its own (`openSetupAssistant`); the menu shows
+            // the main page, whose "Einrichtung nötig" card opens that window.
+            page = .main
         } else if hasUnseenWhatsNew {
             page = .whatsNew
         } else if page == .workflow {
@@ -712,12 +716,14 @@ final class AppState {
         markOnboardingSeen()
         keepsSetupAssistantOpen = false
         page = .main
+        onSetupAssistantFinished?()
     }
 
-    /// From the "Einrichtung starten" card on the main page.
+    /// From the "Einrichtung starten" card on the main page: the assistant's window opens.
     func openSetupAssistant() {
         keepsSetupAssistantOpen = true
-        page = .onboarding
+        page = .main
+        NotificationCenter.default.post(name: .openSetupAssistant, object: nil)
     }
 
     /// A finished setup counts as seen however it was reached, so "What's new" works and the
@@ -1297,6 +1303,7 @@ extension Notification.Name {
     static let showWhatsNew = Notification.Name("showWhatsNew")
     static let showPopover = Notification.Name("showPopover")
     static let openSettings = Notification.Name("openSettings")
+    static let openSetupAssistant = Notification.Name("openSetupAssistant")
 }
 
 struct LastInsertion {
