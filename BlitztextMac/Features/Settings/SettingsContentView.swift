@@ -394,7 +394,39 @@ struct AboutBlitztextSection: View {
             .buttonStyle(SubtleButtonStyle())
 
             // Macs where Jamf delivers Blitztext show nothing about updates: nobody has to act.
-            if appState.appUpdateService.updatesInApp {
+            if appState.appUpdateService.notifiesOnly {
+                // A fork's build: the original's new versions are shown, never installed.
+                Text("Eigene Version. Neue Versionen des Originals zeigt Blitztext nur an und installiert sie nie, denn sie w\u{00FC}rden deine \u{00C4}nderungen ersetzen.")
+                    .font(.ui(12))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 10) {
+                    Button(appState.appUpdateService.isCheckingUpstream ? "Sucht \u{2026}" : "Original pr\u{00FC}fen") {
+                        Task { await appState.appUpdateService.checkUpstream() }
+                    }
+                    .buttonStyle(SubtleButtonStyle())
+                    .disabled(appState.appUpdateService.isCheckingUpstream)
+
+                    if let release = appState.appUpdateService.upstreamRelease {
+                        Button("Neuerungen in \(release.version) ansehen") {
+                            NSWorkspace.shared.open(release.url)
+                        }
+                        .buttonStyle(SubtleButtonStyle())
+                    }
+                }
+
+                Toggle("T\u{00E4}glich im Original nachsehen", isOn: Binding(
+                    get: { appState.appUpdateService.checksUpstreamDaily },
+                    set: { appState.appUpdateService.checksUpstreamDaily = $0 }
+                ))
+                .toggleStyle(.trailingSwitch)
+
+                Text(upstreamStatus)
+                    .font(.ui(12))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if appState.appUpdateService.updatesInApp {
                 if !BlitztextInstallLocationService.currentInstallLocation.isCanonicalInstall {
                     Text("Auto-Updates laufen erst sauber, wenn Blitztext aus /Applications gestartet wird.")
                         .font(.ui(12))
@@ -496,6 +528,21 @@ struct AboutBlitztextSection: View {
             appState.copyToClipboard(FeedbackMail.address)
             return
         }
+    }
+
+    /// Fork builds: what the last look at the original found.
+    private var upstreamStatus: String {
+        let updates = appState.appUpdateService
+        if let release = updates.upstreamRelease {
+            return "Im Original gibt es Version \(release.version), du hast \(appVersion)."
+        }
+        if let error = updates.upstreamCheckError {
+            return error
+        }
+        if let checked = updates.upstreamCheckedAt {
+            return "Keine neuere Version im Original. Zuletzt nachgesehen: \(checked.formatted(date: .abbreviated, time: .shortened))."
+        }
+        return "Noch nicht nachgesehen."
     }
 
     private var appVersion: String {

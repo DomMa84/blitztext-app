@@ -108,6 +108,19 @@ struct MenuBarView: View {
                     )
                 }
 
+                // Fork builds: a newer version of the original, shown and never installed.
+                if appState.appUpdateService.showsUpstreamNotice, let release = appState.appUpdateService.upstreamRelease {
+                    NoticeRow(
+                        icon: "sparkles",
+                        title: "Neue Version im Original: \(release.version)",
+                        detail: "Wird nicht installiert. Schau, was du davon \u{00FC}bernehmen willst.",
+                        actionTitle: "Ansehen",
+                        action: { NSWorkspace.shared.open(release.url) },
+                        secondaryTitle: "Ausblenden",
+                        secondaryAction: { appState.appUpdateService.dismissedUpstreamVersion = release.version }
+                    )
+                }
+
                 if appState.offersTranscriptInstead, let last = appState.lastInsertion {
                     NoticeRow(
                         icon: "arrow.uturn.backward",
