@@ -42,3 +42,9 @@ Blitztext+, $%&! and :) need a language model:
 `fn` shortcuts only work on Apple keyboards. For other keyboards set your own shortcut per mode in **Settings > Allgemein > Tastenkürzel** (e.g. `⌃⌥D` or `F13`). An own shortcut replaces the `fn` shortcut of that mode. `fn` itself cannot be part of an own shortcut.
 
 **Halten:** hold to record, release to process. **Drücken:** press to start, press again or `Esc` to stop.
+
+## 6. Changes From The Original (Fork)
+
+This fork does not take over the original's changes by itself. Every Monday `.github/workflows/upstream-check.yml` compares it with [cmagnussen/blitztext-app](https://github.com/cmagnussen/blitztext-app); when something is new there, it opens an issue **Neu im Original** (label `upstream`) with one checkbox per change, its description and the new versions. Tick what you want and take those changes over one by one as pull requests. **Actions > Upstream check > Run workflow** checks right away; `python3 scripts/upstream-check.py --dry-run` prints the list locally.
+
+The next issue lists only what came after the last one, and changes already taken over (cherry-picked) are left out. Issues must be on for the fork: **Settings > General > Features > Issues**.
