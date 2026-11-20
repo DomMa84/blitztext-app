@@ -390,7 +390,21 @@ final class AppState {
     }
 
     var selectedLocalModelIsInstalled: Bool {
-        LocalTranscriptionService.isModelInstalled(selectedLocalModelName)
+        // Read so views update when the models move to another folder.
+        _ = modelStorageRevision
+        return LocalTranscriptionService.isModelInstalled(selectedLocalModelName)
+    }
+
+    /// Counts moves of the models folder (`ModelStorageSection`): what is installed is read
+    /// from the disk, so a move must tell the views to look again.
+    var modelStorageRevision = 0
+
+    /// The models moved to another folder: installed states are read again.
+    func modelStorageChanged() {
+        modelStorageRevision += 1
+        LocalModelStore.shared.refresh()
+        localModelDownloadErrorText = nil
+        localModelDownloadStatusText = nil
     }
 
     var isDownloadingLocalModel: Bool {
@@ -596,6 +610,11 @@ final class AppState {
 
     func installSelectedLocalModel() {
         guard !isDownloadingLocalModel else { return }
+        // The chosen drive is unplugged: a download now would land on the Mac's own disk.
+        if let message = ModelStorageLocation.unavailableMessage {
+            localModelDownloadErrorText = message
+            return
+        }
 
         let modelName = selectedLocalModelName
         localModelDownloadProgress = 0

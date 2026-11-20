@@ -17,6 +17,14 @@ WhisperKit Core ML models (about 100 languages, language detection), installed f
 
 The app detects installed model folders that contain `AudioEncoder.mlmodelc`, `MelSpectrogram.mlmodelc`, and `TextDecoder.mlmodelc`.
 
+## Storage Location
+
+By default every model lives in `~/Library/Application Support/Blitztext/models/`. On a Mac with little room, choose another folder under **Settings > Modelle > Speicherort**, for example on an external SSD. Blitztext creates a folder `Blitztext Modelle` there and moves the models already downloaded: it copies everything first and removes the originals only when the copy is complete. **Zurück auf diesen Mac** moves them back.
+
+- The drive must be connected when you dictate. While it is not, the settings and the setup assistant say so, and nothing is downloaded to the Mac's own disk instead.
+- macOS may ask once whether Blitztext may access files on the drive.
+- An APFS- or Mac OS Extended-formatted drive is the safe choice for model folders.
+
 ## Install From The App
 
 Open **Settings > Modelle > Spracherkennung**, choose a model and load it. The selected model is used by every mode; the writing modes then rewrite the text with Apple Intelligence or your own model provider.
