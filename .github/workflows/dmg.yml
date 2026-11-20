@@ -1,0 +1,78 @@
+name: DMG
+
+# Builds the installer (Blitztext-<version>.dmg) on GitHub's Macs, so nobody needs Xcode
+# on their own Mac to install a build of this repository.
+# - every push to main and "Run workflow" in the Actions tab: the DMG is an artifact of the run
+# - a pull request that changes how the DMG is built: the same, to try it before merging
+# - a tag such as v1.18.1-1: the DMG is attached to a release of that name as well
+
+on:
+  pull_request:
+    paths:
+      - build.sh
+      - scripts/**
+      - .github/workflows/dmg.yml
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dmg-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dmg:
+    name: Build installer
+    runs-on: macos-26
+    timeout-minutes: 60
+    permissions:
+      # Only the release step on a tag writes; everything else reads.
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dmgbuild
+        run: python3 -m pip install dmgbuild==2.0.0
+
+      - name: Build app and DMG
+        run: ./build.sh --dmg
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v5
+        with:
+          name: Blitztext-DMG
+          path: dist/*.dmg
+          if-no-files-found: error
+          # The DMG is compressed already.
+          compression-level: 0
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.dmg \
+            --title "Blitztext $GITHUB_REF_NAME" \
+            --generate-notes
