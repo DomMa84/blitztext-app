@@ -137,6 +137,7 @@ targets:
       - path: Services/UnfinishedRecordings.swift
       - path: Services/AppSupportPaths.swift
       - path: Services/ModelStorageLocation.swift
+      - path: Services/UpstreamRelease.swift
       - path: Services/RecordingFile.swift
       - path: Services/TranscriptionQualityService.swift
       - path: ../BlitztextShared/Transcription/CompiledModelCheck.swift

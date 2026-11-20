@@ -21,6 +21,7 @@ This page covers the Mac app and, further down, the [iPhone app](#iphone-app). B
 - **Optional model provider:** if you add your own provider and API key, the *recognized text* of the writing modes goes directly from your Mac to that provider. Audio never does. Your contract and their privacy terms apply.
 - **Text around the cursor for the writing modes (off by default):** with "KI-Modi sehen den Text am Cursor" on, the text around your cursor goes along to the writing mode. With Apple Intelligence it stays on your Mac; with your own model provider it goes to that provider.
 - **Update check:** Blitztext asks the GitHub releases of this repository for a new version (Sparkle). GitHub sees the request, as with any download. Turn it off in Settings > Allgemein > Über Blitztext. On Macs where Blackboat's Jamf installed Blitztext, it does not check; updates come from Jamf.
+- **Update check in this fork's builds:** builds with `BlitztextUpstreamRepository` in their Info.plist never install anything. Once a day while running, and on "Original prüfen", they ask GitHub's API (`api.github.com`) for the original's latest release, only to show its version and a link. Turn it off in Settings > Allgemein > Über Blitztext ("Täglich im Original nachsehen").
 
 ## Clipboard
 
