@@ -14,6 +14,19 @@ cd blitztext-app
 
 The app is installed to `/Applications/Blitztext.app` and appears in the menu bar.
 
+### Installer (DMG) without Xcode
+
+The workflow `.github/workflows/dmg.yml` builds `Blitztext-<version>.dmg` on GitHub's Macs, so a Mac with little free space does not need Xcode:
+
+- **Every push to `main`**, or **Actions > DMG > Run workflow**: open the run and download **Blitztext-DMG** under Artifacts (a ZIP that holds the DMG; you must be signed in to GitHub).
+- **A tag** such as `v1.18.1-1`: the DMG is also attached to a release of that name.
+
+To build the DMG on your own Mac instead: `./build.sh --dmg` writes it to `dist/` (`python3 -m pip install dmgbuild` gives it the window layout).
+
+Open the DMG and drag **Blitztext** onto **Programme**. Any other folder works too, for example on an external SSD; that drive must then be connected whenever Blitztext starts.
+
+These builds are signed ad hoc, not notarized by Apple. The first time you open one, macOS says it could not check the app. Click **Fertig**, open **System Settings > Privacy & Security**, click **Open Anyway** next to Blitztext and confirm. Every new build also needs **Accessibility** again: in Blitztext under Allgemein, click "Freigabe zurücksetzen".
+
 ## 2. Permissions
 
 - **Microphone:** to record.

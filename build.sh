@@ -6,6 +6,7 @@ set -euo pipefail
 
 RUN_AFTER=false
 INSTALL_APP=false
+MAKE_DMG=false
 BUILD_CONFIGURATION="Release"
 UNIVERSAL_ARCHS="arm64 x86_64"
 # Signing identity for the finished app. Default "-" is ad hoc: works on this Mac, but
@@ -29,9 +30,13 @@ for arg in "$@"; do
         --release)
             BUILD_CONFIGURATION="Release"
             ;;
+        --dmg)
+            # Also pack the app into dist/Blitztext-<Version>.dmg (scripts/make-dmg.sh).
+            MAKE_DMG=true
+            ;;
         *)
             echo "Unbekannte Option: $arg"
-            echo "Verwendung: ./build.sh [--install] [--run] [--release] [--debug]"
+            echo "Verwendung: ./build.sh [--install] [--run] [--release] [--debug] [--dmg]"
             exit 1
             ;;
     esac
@@ -159,6 +164,10 @@ if ! codesign --verify --deep --strict "$DEST" 2>&1; then
 fi
 echo "✅ Signatur geprüft"
 verify_universal_app "$DEST"
+
+if [ "$MAKE_DMG" = true ]; then
+    "$SCRIPT_DIR/scripts/make-dmg.sh" "$DEST" "$SCRIPT_DIR/dist"
+fi
 
 RUN_TARGET="$DEST"
 
