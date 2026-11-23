@@ -1,21 +1,13 @@
 name: DMG
 
 # Builds the installer (DoMa-Talk-<version>.dmg) on GitHub's Macs, so nobody needs Xcode
-# on their own Mac to install a build of this repository.
-# - every push to main and "Run workflow" in the Actions tab: the DMG is an artifact of the run
-# - a pull request that changes how the DMG is built: the same, to try it before merging
+# on their own Mac to install a build of this repository. Only when the owner decides to:
 # - a published release (tag such as v1.18.1-1): the DMG is attached to it, and only the two
 #   newest releases stay; older ones go with their tags (see docs/setup.md)
+# - "Run workflow" in the Actions tab: the DMG is an artifact of that run, e.g. to try a branch
+# Merges and pull requests build no DMG.
 
 on:
-  pull_request:
-    paths:
-      - build.sh
-      - scripts/**
-      - .github/workflows/dmg.yml
-  push:
-    branches:
-      - main
   release:
     types:
       - published
