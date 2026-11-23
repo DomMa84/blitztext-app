@@ -77,7 +77,7 @@ struct MenuBarView: View {
                     NoticeRow(
                         icon: "externaldrive.badge.plus",
                         title: "Nach /Applications verschieben",
-                        detail: "So startet Blitztext zuverl\u{00E4}ssig mit dem Mac und bekommt Updates.",
+                        detail: "So startet DoMa Talk zuverl\u{00E4}ssig mit dem Mac und bekommt Updates.",
                         actionTitle: "Pr\u{00FC}fen",
                         action: { appState.openSettings(.general) }
                     )
@@ -97,7 +97,7 @@ struct MenuBarView: View {
                     NoticeRow(
                         icon: "mic.slash.fill",
                         title: "Aufnehmen braucht das Mikrofon",
-                        detail: "Blitztext ist in den Systemeinstellungen f\u{00FC}r das Mikrofon nicht erlaubt.",
+                        detail: "DoMa Talk ist in den Systemeinstellungen f\u{00FC}r das Mikrofon nicht erlaubt.",
                         tint: BlitztextTheme.danger,
                         actionTitle: "\u{00D6}ffnen",
                         action: {
@@ -279,7 +279,7 @@ struct MenuBarView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Einrichtung n\u{00F6}tig")
                 .font(.ui(17, .bold))
-            Text("Der Assistent f\u{00FC}hrt durch Mikrofon, Einf\u{00FC}gen und Spracherkennung. Blitztext transkribiert direkt auf diesem Mac.")
+            Text("Der Assistent f\u{00FC}hrt durch Mikrofon, Einf\u{00FC}gen und Spracherkennung. DoMa Talk transkribiert direkt auf diesem Mac.")
                 .font(.ui(12.5))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -334,7 +334,7 @@ struct MenuBarView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.filledAction)
-                    .help("Ein Gespr\u{00E4}ch vor Ort: Blitztext nimmt das Mikrofon auf.")
+                    .help("Ein Gespr\u{00E4}ch vor Ort: DoMa Talk nimmt das Mikrofon auf.")
 
                     if MeetingController.canRecordSystemAudio {
                         Button {
@@ -344,7 +344,7 @@ struct MenuBarView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.filledAction)
-                        .help("Ein Call: Blitztext nimmt dein Mikrofon und den Ton des Macs auf.")
+                        .help("Ein Call: DoMa Talk nimmt dein Mikrofon und den Ton des Macs auf.")
                     }
                 }
             }
@@ -380,7 +380,7 @@ struct MenuBarView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(!appState.isWorkflowAvailable(.tapTalk))
-                .help("Blitztext jetzt starten")
+                .help("DoMa Talk jetzt starten")
                 .accessibilityLabel("Aufnahme starten")
 
                 VStack(alignment: .leading, spacing: 3) {
@@ -554,7 +554,7 @@ struct MenuBarView: View {
                     .fixedSize()
             }
             .buttonStyle(.glassAction)
-            .help("Sprachmemo oder WhatsApp-Sprachnachricht transkribieren. Du kannst Dateien auch auf das Blitztext-Symbol im Finder ziehen.")
+            .help("Sprachmemo oder WhatsApp-Sprachnachricht transkribieren. Du kannst Dateien auch auf das DoMa-Talk-Symbol im Finder ziehen.")
 
             Button {
                 appState.page = .history

@@ -7,7 +7,7 @@ import Foundation
 enum ModelStorageLocation {
     static let defaultsKey = "ModelStorageDirectory"
     /// Made inside the folder the user picks, so the models do not spill into the top of a drive.
-    static let folderName = "Blitztext Modelle"
+    static let folderName = "DoMa Talk Modelle"
 
     /// The folder chosen in the settings; nil for the default inside Application Support.
     static var customDirectoryURL: URL? {

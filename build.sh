@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Blitztext macOS App - Build & Run
+# DoMa Talk (fork of Blitztext) macOS App - Build & Run
 # Voraussetzungen: Xcode Command Line Tools, xcodegen
 
 RUN_AFTER=false
@@ -31,7 +31,7 @@ for arg in "$@"; do
             BUILD_CONFIGURATION="Release"
             ;;
         --dmg)
-            # Also pack the app into dist/Blitztext-<Version>.dmg (scripts/make-dmg.sh).
+            # Also pack the app into dist/<Name>-<Version>.dmg (scripts/make-dmg.sh).
             MAKE_DMG=true
             ;;
         *)
@@ -77,6 +77,12 @@ verify_universal_app() {
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR/BlitztextMac"
 PROJECT_FILE="$PROJECT_DIR/BlitztextMac.xcodeproj"
+# The app's name as the project builds it (PRODUCT_NAME in project.yml), e.g. "DoMa Talk".
+APP_NAME="$(sed -n 's/^ *PRODUCT_NAME: *"\{0,1\}\([^"]*\)"\{0,1\} *$/\1/p' "$PROJECT_DIR/project.yml" | head -1)"
+if [ -z "$APP_NAME" ]; then
+    echo "❌ PRODUCT_NAME nicht in $PROJECT_DIR/project.yml gefunden."
+    exit 1
+fi
 # Keep DerivedData outside iCloud-synced folders (Desktop/Documents): the file
 # provider adds com.apple.FinderInfo xattrs to bundles, which breaks codesign with
 # "resource fork, Finder information, or similar detritus not allowed".
@@ -101,7 +107,7 @@ else
 fi
 
 # Bauen
-echo "🔨 Baue Blitztext ..."
+echo "🔨 Baue $APP_NAME ..."
 xcodebuild \
     -project BlitztextMac.xcodeproj \
     -scheme BlitztextMac \
@@ -113,7 +119,7 @@ xcodebuild \
     clean build
 
 # App finden
-APP_PATH="$DERIVED_DATA_PATH/Build/Products/$BUILD_CONFIGURATION/Blitztext.app"
+APP_PATH="$DERIVED_DATA_PATH/Build/Products/$BUILD_CONFIGURATION/$APP_NAME.app"
 
 if [ ! -d "$APP_PATH" ]; then
     echo "❌ Build fehlgeschlagen – keine App gefunden."
@@ -134,14 +140,14 @@ cp -f "$PROJECT_DIR/Resources/menubar_icon@2x.png" "$RESOURCES_DIR/" 2>/dev/null
 # im Projektordner (cmagnussen/blitztext-app PR #16).
 if [ "$INSTALL_APP" = true ]; then
     APPS_DIR="/Applications"
-    DEST="$APPS_DIR/Blitztext.app"
+    DEST="$APPS_DIR/$APP_NAME.app"
     if [ ! -w "$APPS_DIR" ]; then
         echo "❌ /Applications ist nicht beschreibbar."
         echo "   Fuehre den Befehl mit passenden Rechten erneut aus oder ziehe die App manuell nach /Applications."
         exit 1
     fi
 else
-    DEST="$SCRIPT_DIR/Blitztext.app"
+    DEST="$SCRIPT_DIR/$APP_NAME.app"
 fi
 
 rm -rf "$DEST"
@@ -190,6 +196,6 @@ echo ""
 
 # Optional: direkt starten
 if [ "$RUN_AFTER" = true ]; then
-    echo "🚀 Starte Blitztext ..."
+    echo "🚀 Starte $APP_NAME ..."
     open "$RUN_TARGET"
 fi

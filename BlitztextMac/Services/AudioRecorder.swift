@@ -76,7 +76,7 @@ final class AudioRecorder: NSObject, AVAudioRecorderDelegate, DictationRecorder 
             guard audioRecorder?.record() == true else {
                 audioRecorder = nil
                 restoreInput()
-                errorMessage = "Die Aufnahme lie\u{00DF} sich nicht starten. Darf Blitztext das Mikrofon nutzen?"
+                errorMessage = "Die Aufnahme lie\u{00DF} sich nicht starten. Darf DoMa Talk das Mikrofon nutzen?"
                 return
             }
             isRecording = true

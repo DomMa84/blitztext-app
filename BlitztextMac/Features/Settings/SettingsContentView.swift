@@ -138,7 +138,7 @@ struct PermissionWarningSection: View {
                         .font(.ui(11.5, .semibold))
                         .foregroundStyle(.primary)
 
-                    Text("\u{00D6}ffne Bedienungshilfen und aktiviere Blitztext. Steht Blitztext dort schon auf an, hier die Freigabe zur\u{00FC}cksetzen und danach neu erlauben.")
+                    Text("\u{00D6}ffne Bedienungshilfen und aktiviere DoMa Talk. Steht DoMa Talk dort schon auf an, hier die Freigabe zur\u{00FC}cksetzen und danach neu erlauben.")
                         .font(.ui(12))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -190,7 +190,7 @@ struct PermissionWarningSection: View {
             resetErrorText = nil
             Task {
                 if !(await appState.resetAccessibilityPermission()) {
-                    resetErrorText = "Zur\u{00FC}cksetzen hat nicht geklappt. In Bedienungshilfen Blitztext mit \u{201E}\u{2212}\u{201C} entfernen und neu hinzuf\u{00FC}gen."
+                    resetErrorText = "Zur\u{00FC}cksetzen hat nicht geklappt. In Bedienungshilfen DoMa Talk mit \u{201E}\u{2212}\u{201C} entfernen und neu hinzuf\u{00FC}gen."
                 }
                 isResetting = false
             }
@@ -229,7 +229,7 @@ struct InstallationWarningSection: View {
                 .textSelection(.enabled)
 
             if !BlitztextInstallLocationService.otherInstalledBundleURLs.isEmpty {
-                Text("Auf diesem Mac liegen weitere Blitztext-Kopien. Behalte nur eine, sonst startet die App womöglich doppelt.")
+                Text("Auf diesem Mac liegen weitere DoMa-Talk-Kopien. Behalte nur eine, sonst startet die App womöglich doppelt.")
                     .font(.ui(12))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -269,11 +269,11 @@ struct InstallationWarningSection: View {
     private var installationHeadline: String {
         switch currentInstallLocation {
         case .applications:
-            return "Blitztext liegt am richtigen Ort."
+            return "DoMa Talk liegt am richtigen Ort."
         case .userApplications:
-            return "Blitztext liegt noch in ~/Applications."
+            return "DoMa Talk liegt noch in ~/Applications."
         case .outsideApplications:
-            return "Blitztext liegt noch nicht in /Applications."
+            return "DoMa Talk liegt noch nicht in /Applications."
         case .unknown:
             return "Der Installationsort konnte nicht sicher erkannt werden."
         }
@@ -287,11 +287,11 @@ struct InstallationWarningSection: View {
             }
             return "Diese Kopie ist korrekt. Zusätzliche Kopien solltest du später entfernen."
         case .userApplications:
-            return "Für Team-Rollouts und saubere Updates sollte Blitztext nur aus /Applications laufen."
+            return "Für Team-Rollouts und saubere Updates sollte DoMa Talk nur aus /Applications laufen."
         case .outsideApplications:
-            return "Verschiebe Blitztext einmal nach /Applications, damit Anmeldestart und spätere Updates sauber bleiben."
+            return "Verschiebe DoMa Talk einmal nach /Applications, damit Anmeldestart und spätere Updates sauber bleiben."
         case .unknown:
-            return "Öffne Blitztext möglichst direkt aus /Applications."
+            return "Öffne DoMa Talk möglichst direkt aus /Applications."
         }
     }
 
@@ -322,7 +322,7 @@ struct LaunchAtLoginSection: View {
     var body: some View {
         SettingsSection(title: "Beim Anmelden") {
 
-            Toggle("Blitztext automatisch starten", isOn: Binding(
+            Toggle("DoMa Talk automatisch starten", isOn: Binding(
                 get: { launchAtLoginService.isEnabled },
                 set: { launchAtLoginService.setEnabled($0) }
             ))
@@ -350,10 +350,12 @@ struct AboutBlitztextSection: View {
     @State private var cleanupStatusText: String?
     @State private var cleanupErrorText: String?
 
-    static let repositoryURL = "https://github.com/cmagnussen/blitztext-app"
+    /// This fork; the original it comes from is `originalURL`.
+    static let repositoryURL = "https://github.com/DomMa84/blitztext-app"
+    static let originalURL = "https://github.com/cmagnussen/blitztext-app"
 
     var body: some View {
-        SettingsSection(title: "\u{00DC}ber Blitztext") {
+        SettingsSection(title: "\u{00DC}ber DoMa Talk") {
 
             HStack(spacing: 10) {
                 Text("Version \(appVersion)")
@@ -374,12 +376,25 @@ struct AboutBlitztextSection: View {
                     .font(.ui(11.5, .medium))
                 }
                 .buttonStyle(.glassAction)
-                .help("Blitztext ist Open Source. Ein Stern auf GitHub hilft.")
+                .help("Der Code von DoMa Talk auf GitHub.")
             }
+
+            // Where DoMa Talk comes from and who changed it: said plainly, in the app itself.
+            Text("DoMa Talk ist ein unabh\u{00E4}ngiger Fork von Blitztext (Blackboat, MIT-Lizenz) und hat keine Verbindung zu Blackboat. Name, Icon und die Anpassungen dieses Forks sind mit Claude Code von Anthropic entstanden.")
+                .font(.ui(12))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button("Original Blitztext auf GitHub") {
+                if let url = URL(string: Self.originalURL) {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+            .buttonStyle(SubtleButtonStyle())
 
             Button("Feedback senden") { sendFeedback() }
                 .buttonStyle(SubtleButtonStyle())
-                .help("\u{00D6}ffnet eine vorbereitete Mail an \(FeedbackMail.address). Du siehst alles, bevor sie rausgeht.")
+                .help("\u{00D6}ffnet ein vorbereitetes Issue auf GitHub (\(FeedbackMail.address)). Du siehst alles, bevor es rausgeht.")
 
             Button("Neuigkeiten in \(WhatsNew.version) anzeigen") {
                 appState.showWhatsNewAgain()
@@ -396,7 +411,7 @@ struct AboutBlitztextSection: View {
             // Macs where Jamf delivers Blitztext show nothing about updates: nobody has to act.
             if appState.appUpdateService.notifiesOnly {
                 // A fork's build: the original's new versions are shown, never installed.
-                Text("Eigene Version. Neue Versionen des Originals zeigt Blitztext nur an und installiert sie nie, denn sie w\u{00FC}rden deine \u{00C4}nderungen ersetzen.")
+                Text("Eigene Version. Neue Versionen des Originals zeigt DoMa Talk nur an und installiert sie nie, denn sie w\u{00FC}rden deine \u{00C4}nderungen ersetzen.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -428,7 +443,7 @@ struct AboutBlitztextSection: View {
                     .fixedSize(horizontal: false, vertical: true)
             } else if appState.appUpdateService.updatesInApp {
                 if !BlitztextInstallLocationService.currentInstallLocation.isCanonicalInstall {
-                    Text("Auto-Updates laufen erst sauber, wenn Blitztext aus /Applications gestartet wird.")
+                    Text("Auto-Updates laufen erst sauber, wenn DoMa Talk aus /Applications gestartet wird.")
                         .font(.ui(12))
                         .foregroundStyle(.primary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -476,7 +491,7 @@ struct AboutBlitztextSection: View {
                 Toggle("Einstellungen, API-Keys und Modelle l\u{00F6}schen", isOn: $deleteLocalDataOnCleanup)
                     .toggleStyle(.trailingSwitch)
 
-                Text("Entfernt auch den Anmeldestart. Danach Blitztext beenden und die App aus /Applications l\u{00F6}schen.")
+                Text("Entfernt auch den Anmeldestart. Danach DoMa Talk beenden und die App aus /Applications l\u{00F6}schen.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -494,7 +509,7 @@ struct AboutBlitztextSection: View {
                     .foregroundStyle(BlitztextTheme.danger)
                 }
             } else {
-                Button("Blitztext von diesem Mac entfernen \u{2026}") {
+                Button("DoMa Talk von diesem Mac entfernen \u{2026}") {
                     showCleanupOptions = true
                 }
                 .buttonStyle(SubtleButtonStyle())
@@ -516,7 +531,7 @@ struct AboutBlitztextSection: View {
         }
     }
 
-    /// A prepared mail in the mail app; without one the address lands on the clipboard.
+    /// A prepared issue on GitHub in the browser; when nothing opens, the address lands on the clipboard.
     private func sendFeedback() {
         let details = [
             "Spracherkennung: \(LocalTranscriptionModel.displayName(for: appState.selectedLocalModelName))",
@@ -568,8 +583,8 @@ struct AboutBlitztextSection: View {
 
         if report.failedItems.isEmpty {
             cleanupStatusText = deleteLocalDataOnCleanup
-                ? "Anmeldestart und lokale Daten wurden bereinigt. Jetzt Blitztext beenden und aus /Applications löschen."
-                : "Anmeldestart wurde deaktiviert. Jetzt Blitztext beenden und aus /Applications löschen."
+                ? "Anmeldestart und lokale Daten wurden bereinigt. Jetzt DoMa Talk beenden und aus /Applications löschen."
+                : "Anmeldestart wurde deaktiviert. Jetzt DoMa Talk beenden und aus /Applications löschen."
             showCleanupOptions = false
 
             let urlsToReveal = report.knownInstallBundleURLs.isEmpty
@@ -598,7 +613,7 @@ struct AboutBlitztextSection: View {
 struct MeetingNotesSection: View {
     var body: some View {
         SettingsSection(title: "Aufnahmen") {
-            Text("Online-Meeting, Live-Notizen und Zusammenfassung w\u{00E4}hlst du beim Start eines Meetings. Blitztext merkt sich die letzte Wahl.")
+            Text("Online-Meeting, Live-Notizen und Zusammenfassung w\u{00E4}hlst du beim Start eines Meetings. DoMa Talk merkt sich die letzte Wahl.")
                 .font(.ui(12))
                 .fixedSize(horizontal: false, vertical: true)
             Text("Die Aufnahme wird nach der Auswertung gel\u{00F6}scht. Ein Meeting ohne Auswertung beh\u{00E4}lt sie 30 Tage. Transkript und Zusammenfassung liegen verschl\u{00FC}sselt auf diesem Mac.")
@@ -723,7 +738,7 @@ struct CustomizeSettingsView: View {
                 Toggle("Aufnahmeanzeige zeigen", isOn: $appState.appSettings.showsRecordingIndicator)
                     .toggleStyle(.trailingSwitch)
 
-                Text("Eine kleine lila Anzeige bewegt sich mit deiner Stimme, solange Blitztext aufnimmt und schreibt. Ein Klick stoppt die Aufnahme oder öffnet das laufende Meeting. Ziehen verschiebt sie, ein Rechtsklick blendet sie für die laufende Aufnahme aus.")
+                Text("Eine kleine lila Anzeige bewegt sich mit deiner Stimme, solange DoMa Talk aufnimmt und schreibt. Ein Klick stoppt die Aufnahme oder öffnet das laufende Meeting. Ziehen verschiebt sie, ein Rechtsklick blendet sie für die laufende Aufnahme aus.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -732,7 +747,7 @@ struct CustomizeSettingsView: View {
                     .toggleStyle(.trailingSwitch)
                     .font(.ui(11.5))
 
-                Text("Podcast, Musik oder Video sind stumm, solange Blitztext aufnimmt, und danach sofort wieder zu h\u{00F6}ren. Pausieren kann Blitztext sie nicht, weil macOS Apps nicht verr\u{00E4}t, was gerade l\u{00E4}uft.")
+                Text("Podcast, Musik oder Video sind stumm, solange DoMa Talk aufnimmt, und danach sofort wieder zu h\u{00F6}ren. Pausieren kann DoMa Talk sie nicht, weil macOS Apps nicht verr\u{00E4}t, was gerade l\u{00E4}uft.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -759,7 +774,7 @@ struct CustomizeSettingsView: View {
                     .toggleStyle(.trailingSwitch)
                     .font(.ui(11.5))
 
-                Text("Setzt Leerzeichen und Gro\u{00DF}- und Kleinschreibung passend zum Text davor und danach. Blitztext liest dazu das Textfeld \u{00FC}ber die Bedienungshilfen, Passwortfelder nie.")
+                Text("Setzt Leerzeichen und Gro\u{00DF}- und Kleinschreibung passend zum Text davor und danach. DoMa Talk liest dazu das Textfeld \u{00FC}ber die Bedienungshilfen, Passwortfelder nie.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -790,7 +805,7 @@ struct CustomizeSettingsView: View {
             // MARK: Spracherkennung
             SettingsSection(title: "Spracherkennung") {
 
-                Text("Blitztext transkribiert immer auf diesem Mac. Das Audio verlässt das Gerät nicht.")
+                Text("DoMa Talk transkribiert immer auf diesem Mac. Das Audio verlässt das Gerät nicht.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -902,7 +917,7 @@ struct CustomizeSettingsView: View {
                     .toggleStyle(.trailingSwitch)
                     .font(.ui(11.5))
 
-                Text("Blitztext+, $%&!, :) und eigene Modi bekommen den Text rund um den Cursor als Kontext, etwa die Mail, auf die du antwortest. Mit einem Modell-Anbieter geht dieser Text mit an den Anbieter.")
+                Text("DoMa Talk+, $%&!, :) und eigene Modi bekommen den Text rund um den Cursor als Kontext, etwa die Mail, auf die du antwortest. Mit einem Modell-Anbieter geht dieser Text mit an den Anbieter.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1019,7 +1034,7 @@ struct CustomizeSettingsView: View {
             // MARK: Eigennamen
             SettingsSection(title: "Eigennamen") {
 
-                Text("Namen und Fachbegriffe, die Blitztext genau so schreiben soll. KI-Modi \u{00FC}bernehmen sie unver\u{00E4}ndert.")
+                Text("Namen und Fachbegriffe, die DoMa Talk genau so schreiben soll. KI-Modi \u{00FC}bernehmen sie unver\u{00E4}ndert.")
                     .font(.ui(12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1431,7 +1446,7 @@ struct MicrophonePickerRow: View {
             }
             // Public issue #55: the switch is system-wide until dictation records on the device
             // itself; say so, since a call using the default follows it.
-            Text("Gilt f\u{00FC}r Diktate. W\u{00E4}hrend der Aufnahme stellt Blitztext es auch in macOS ein, danach wieder zur\u{00FC}ck. Apps, die gerade mit dem macOS-Standard aufnehmen, etwa ein Call, wechseln so lange mit. Meetings bleiben beim macOS-Standard, damit ein laufender Call sein Mikrofon beh\u{00E4}lt.")
+            Text("Gilt f\u{00FC}r Diktate. W\u{00E4}hrend der Aufnahme stellt DoMa Talk es auch in macOS ein, danach wieder zur\u{00FC}ck. Apps, die gerade mit dem macOS-Standard aufnehmen, etwa ein Call, wechseln so lange mit. Meetings bleiben beim macOS-Standard, damit ein laufender Call sein Mikrofon beh\u{00E4}lt.")
                 .font(.ui(12))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -55,7 +55,7 @@ enum TextRewriter {
         var errorDescription: String? {
             switch self {
             case .noModel:
-                return "Für diesen Modus braucht Blitztext Apple Intelligence oder einen API-Key in den Einstellungen."
+                return "Für diesen Modus braucht DoMa Talk Apple Intelligence oder einen API-Key in den Einstellungen."
             case .onDevice(let message), .noConsent(let message), .notEdited(let message):
                 return message
             }

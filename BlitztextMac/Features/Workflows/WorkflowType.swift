@@ -71,11 +71,11 @@ enum WorkflowType: Hashable, Identifiable, Codable, RawRepresentable {
 
     var displayName: String {
         switch self {
-        case .tapTalk: return "Blitztext"
-        case .localTapTalk: return "Blitztext Lokal"
-        case .textImprover: return "Blitztext+"
-        case .dampfAblassen: return "Blitztext $%&!"
-        case .emojiText: return "Blitztext :)"
+        case .tapTalk: return "DoMa Talk"
+        case .localTapTalk: return "DoMa Talk Lokal"
+        case .textImprover: return "DoMa Talk+"
+        case .dampfAblassen: return "DoMa Talk $%&!"
+        case .emojiText: return "DoMa Talk :)"
         case .custom: return Self.customName(customMode)
         }
     }

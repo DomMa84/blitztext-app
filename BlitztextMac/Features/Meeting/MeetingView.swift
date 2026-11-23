@@ -180,7 +180,7 @@ struct MeetingView: View {
                         ? "Schreibt w\u{00E4}hrend des Meetings mit"
                         : "Braucht Apple Intelligence, ein lokales KI-Modell oder einen Modell-Server auf diesem Mac",
                     help: LiveNotesController.isAvailable
-                        ? "Alle zweieinhalb Minuten schreibt Blitztext mit, was besprochen und entschieden wurde. Bleibt auf diesem Mac."
+                        ? "Alle zweieinhalb Minuten schreibt DoMa Talk mit, was besprochen und entschieden wurde. Bleibt auf diesem Mac."
                         : "Ein lokales KI-Modell l\u{00E4}dst du in den Einstellungen unter Meeting. Ein Modell-Server l\u{00E4}uft \u{00FC}ber Modelle, Eigene Adresse mit localhost.",
                     isOn: $wantsLiveNotes
                 )
@@ -294,7 +294,7 @@ struct MeetingView: View {
     }
 
     /// Asked in the call's chat before starting, so everyone can agree in writing.
-    static let chatNote = "Ich w\u{00FC}rde dieses Meeting gern mit Blitztext aufnehmen und auf meinem Mac transkribieren und zusammenfassen lassen. Ton und Text bleiben auf meinem Mac, die Aufnahme wird nach der Auswertung gel\u{00F6}scht. Ist das f\u{00FC}r alle in Ordnung?"
+    static let chatNote = "Ich w\u{00FC}rde dieses Meeting gern mit DoMa Talk aufnehmen und auf meinem Mac transkribieren und zusammenfassen lassen. Ton und Text bleiben auf meinem Mac, die Aufnahme wird nach der Auswertung gel\u{00F6}scht. Ist das f\u{00FC}r alle in Ordnung?"
 
     private var storedMeetings: [MeetingRecord] {
         meeting.store.meetings.filter { $0.id != meeting.recordingID }
@@ -418,7 +418,7 @@ struct MeetingView: View {
                 Text(step)
                     .font(.ui(12.5, .medium))
             }
-            Text("Bei langen Meetings dauert das ein paar Minuten, alles l\u{00E4}uft auf diesem Mac. Beim ersten Mal l\u{00E4}dt Blitztext dazu einmalig das Modell f\u{00FC}r die Stimmen.")
+            Text("Bei langen Meetings dauert das ein paar Minuten, alles l\u{00E4}uft auf diesem Mac. Beim ersten Mal l\u{00E4}dt DoMa Talk dazu einmalig das Modell f\u{00FC}r die Stimmen.")
                 .font(.ui(11.5))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

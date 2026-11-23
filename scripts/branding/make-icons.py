@@ -1,4 +1,4 @@
-"""Draws the Wortfluss icons: the app icon (asset catalog and AppIcon.icns) and the menu bar
+"""Draws the DoMa Talk icons (designed with Claude Code): the app icon (asset catalog and AppIcon.icns) and the menu bar
 symbol. A head in profile that speaks: three flowing lines leave its mouth, words running on.
 Run it again after a change:
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     for name, size in names.items():
         master.resize((size, size), Image.LANCZOS).save(ICONSET / name, optimize=True)
     master.save(RESOURCES / "AppIcon.icns", sizes=[(16, 16), (32, 32), (64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024)])
-    master.resize((256, 256), Image.LANCZOS).save(ROOT / "docs" / "assets" / "wortfluss-icon.png", optimize=True)
+    master.resize((256, 256), Image.LANCZOS).save(ROOT / "docs" / "assets" / "doma-talk-icon.png", optimize=True)
     menubar_symbol(18).save(RESOURCES / "menubar_icon.png")
     menubar_symbol(36).save(RESOURCES / "menubar_icon@2x.png")
-    print("Wortfluss icons written")
+    print("DoMa Talk icons written")

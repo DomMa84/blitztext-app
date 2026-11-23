@@ -1,12 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-# Packt Blitztext.app in ein Disk-Image (DMG). Beim Öffnen zeigt Finder die App und den
+# Packt die App (DoMa Talk.app) in ein Disk-Image (DMG). Beim Öffnen zeigt Finder die App und den
 # Ordner Programme: zum Installieren die App auf Programme ziehen, wie bei anderen Mac-Apps.
 # Wer Platz sparen will, zieht sie stattdessen auf ein anderes Laufwerk.
 #
-# Verwendung: scripts/make-dmg.sh [Pfad/zu/Blitztext.app] [Zielordner]
-#   Standard: ./Blitztext.app (von ./build.sh) nach ./dist
+# Verwendung: scripts/make-dmg.sh [Pfad/zu/App.app] [Zielordner]
+#   Standard: die App von ./build.sh im Repo-Ordner (Name aus project.yml) nach ./dist
 #
 # Mit dmgbuild (python3 -m pip install dmgbuild) bekommt das Fenster seine Anordnung und
 # den Hintergrund aus scripts/dmg/. Ohne dmgbuild enthält das Image dieselben zwei Einträge
@@ -14,7 +14,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-APP_PATH="${1:-$REPO_DIR/Blitztext.app}"
+DEFAULT_NAME="$(sed -n 's/^ *PRODUCT_NAME: *"\{0,1\}\([^"]*\)"\{0,1\} *$/\1/p' "$REPO_DIR/BlitztextMac/project.yml" | head -1)"
+APP_PATH="${1:-$REPO_DIR/$DEFAULT_NAME.app}"
 OUT_DIR="${2:-$REPO_DIR/dist}"
 
 if [ ! -d "$APP_PATH" ]; then
@@ -28,7 +29,8 @@ APP_NAME="$(basename "$APP_PATH" .app)"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Contents/Info.plist" 2>/dev/null || true)"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
-DMG_PATH="$OUT_DIR/$APP_NAME${VERSION:+-$VERSION}.dmg"
+# No spaces in the file name: "DoMa Talk" becomes DoMa-Talk-1.18.1.dmg.
+DMG_PATH="$OUT_DIR/${APP_NAME// /-}${VERSION:+-$VERSION}.dmg"
 rm -f "$DMG_PATH"
 
 WORK_DIR="$(mktemp -d)"

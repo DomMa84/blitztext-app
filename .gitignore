@@ -15,6 +15,7 @@ build/
 
 # Local app artifacts
 Blitztext.app
+DoMa Talk.app
 dist/
 models/
 *.mlmodel

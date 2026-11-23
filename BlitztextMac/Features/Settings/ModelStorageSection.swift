@@ -109,7 +109,7 @@ struct ModelStorageSection: View {
     private func chooseFolder() {
         let panel = NSOpenPanel()
         panel.title = "Speicherort der Modelle"
-        panel.message = "W\u{00E4}hle einen Ordner, zum Beispiel auf deiner externen SSD. Blitztext legt darin den Ordner \u{201E}\(ModelStorageLocation.folderName)\u{201C} an."
+        panel.message = "W\u{00E4}hle einen Ordner, zum Beispiel auf deiner externen SSD. DoMa Talk legt darin den Ordner \u{201E}\(ModelStorageLocation.folderName)\u{201C} an."
         panel.prompt = "Hierhin verschieben"
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
