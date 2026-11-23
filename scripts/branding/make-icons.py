@@ -102,18 +102,23 @@ def app_icon(size=1024):
 
 
 def menubar_symbol(points):
-    """Black on clear; macOS tints it (template image). Two lines: three blur at 18 points."""
-    s = points * 8
-    image = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    """The app icon's head and three lines, black on clear; macOS tints it (template image).
+    Drawn with the icon's own layout, a little bolder so the lines hold at 18 points, then
+    trimmed to the drawing and fitted into the square."""
+    s = 1024
     canvas = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     speaking_head(
-        ImageDraw.Draw(canvas), left=s * 0.0, top=s * 0.04, unit=s * 0.0066,
-        waves_right=s * 1.0, wave_width=s * 0.1, amplitude=s * 0.05, gap=s * 0.21,
-        fill=(0, 0, 0, 255), lines=2,
+        ImageDraw.Draw(canvas), left=s * 0.07, top=s * 0.15, unit=s * 0.0058,
+        waves_right=s * 0.92, wave_width=s * 0.06, amplitude=s * 0.022, gap=s * 0.115,
+        fill=(0, 0, 0, 255),
     )
-    # The neck ends at the symbol's bottom edge.
-    image.paste(canvas, (0, 0), canvas)
-    return image.resize((points, points), Image.LANCZOS)
+    # The neck would run on; end it where the head's lowest line would be in the icon.
+    canvas = canvas.crop((0, 0, s, round(s * 0.9)))
+    drawing = canvas.crop(canvas.getbbox())
+    side = max(drawing.size)
+    square = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    square.paste(drawing, ((side - drawing.width) // 2, side - drawing.height), drawing)
+    return square.resize((points, points), Image.LANCZOS)
 
 
 if __name__ == "__main__":
