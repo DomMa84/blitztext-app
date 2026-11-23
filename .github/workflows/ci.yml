@@ -1,13 +1,24 @@
 name: CI
 
+# Builds the app and runs the unit tests on a GitHub Mac for every pull request that changes
+# code. macOS minutes are precious: changes to text files only run nothing, a newer push to the
+# same pull request cancels the run before it, and merging into main runs nothing again (the
+# pull request was checked already). "Run workflow" in the Actions tab checks by hand.
+
 on:
   pull_request:
-  push:
-    branches:
-      - main
+    paths-ignore:
+      - "**.md"
+      - docs/**
+      - .github/release-install-notes.md
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-macos:
