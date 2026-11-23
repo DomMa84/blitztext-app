@@ -19,14 +19,22 @@ TOP = (52, 199, 189)      # teal
 BOTTOM = (37, 99, 235)    # blue
 SUPER = 4                 # drawn larger, then scaled down for smooth edges
 
-# A head in profile facing right, in units of a 100 x 150 box; the neck runs on below it
-# and is cut off by the icon's edge. The mouth is slightly open at MOUTH.
+# A head in profile facing right, drawn on classic proportions: top of the skull at 0, chin at
+# 100, hairline, brow and nose base splitting the face in thirds; the neck leans slightly forward
+# and runs on below the chin until the icon's edge cuts it off. The lips are parted at MOUTH.
 HEAD = [
-    (28, 190), (28, 122), (19, 100), (8, 80), (5, 56), (11, 30), (28, 10), (52, 2), (74, 8),
-    (88, 25), (91, 44), (93, 53), (101, 66), (102, 69), (95, 72), (97, 77), (92, 80),
-    (96, 84), (93, 94), (85, 101), (74, 105), (70, 124), (72, 190),
+    # crown and forehead
+    (44, 0), (60, 2), (72, 8), (80, 18), (84, 30), (85, 41),
+    # brow, bridge and nose
+    (86, 46), (84, 50), (89, 58), (95, 66), (96.5, 69), (94, 71), (88, 72),
+    # lips, slightly apart, and chin
+    (90, 75), (90.5, 77.5), (86.5, 80), (89.5, 82.5), (88, 86), (85, 88.5), (88, 93), (87, 98), (82, 101),
+    # jaw underside, throat and the front of the neck
+    (72, 102), (64, 105), (62, 120), (63, 145), (64, 200),
+    # back of the neck, nape and the back of the skull
+    (16, 200), (18, 145), (20, 118), (20, 104), (15, 94), (8, 80), (4, 62), (4, 46), (8, 28), (18, 12), (30, 3),
 ]
-MOUTH = (94, 80)
+MOUTH = (87, 80)
 
 
 def smooth(points, steps=24):
@@ -61,7 +69,7 @@ def speaking_head(draw, left, top, unit, waves_right, wave_width, amplitude, gap
     draw.polygon(outline, fill=fill)
     mouth_x = left + MOUTH[0] * unit
     mouth_y = top + MOUTH[1] * unit
-    start = mouth_x + 12 * unit
+    start = mouth_x + 13 * unit
     offsets = (0,) if lines == 1 else ((-1, 1) if lines == 2 else (-1, 0, 1))
     lengths = {-1: 0.78, 0: 1.0, 1: 0.78}
     for row in offsets:
@@ -83,8 +91,8 @@ def app_icon(size=1024):
         for x in range(body):
             pixels[x, y] = row
     speaking_head(
-        ImageDraw.Draw(art), left=body * 0.08, top=body * 0.2, unit=body * 0.0052,
-        waves_right=body * 0.9, wave_width=body * 0.048, amplitude=body * 0.022, gap=body * 0.105,
+        ImageDraw.Draw(art), left=body * 0.07, top=body * 0.15, unit=body * 0.0058,
+        waves_right=body * 0.92, wave_width=body * 0.046, amplitude=body * 0.021, gap=body * 0.1,
         fill=(255, 255, 255, 255),
     )
     mask = Image.new("L", (body, body), 0)
@@ -99,7 +107,7 @@ def menubar_symbol(points):
     image = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     canvas = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     speaking_head(
-        ImageDraw.Draw(canvas), left=s * 0.0, top=s * 0.1, unit=s * 0.0056,
+        ImageDraw.Draw(canvas), left=s * 0.0, top=s * 0.04, unit=s * 0.0066,
         waves_right=s * 1.0, wave_width=s * 0.1, amplitude=s * 0.05, gap=s * 0.21,
         fill=(0, 0, 0, 255), lines=2,
     )
