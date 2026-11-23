@@ -4,7 +4,8 @@ name: DMG
 # on their own Mac to install a build of this repository.
 # - every push to main and "Run workflow" in the Actions tab: the DMG is an artifact of the run
 # - a pull request that changes how the DMG is built: the same, to try it before merging
-# - a tag such as v1.18.1-1: the DMG is attached to a release of that name as well
+# - a published release (tag such as v1.18.1-1): the DMG is attached to it, and only the two
+#   newest releases stay; older ones go with their tags (see docs/setup.md)
 
 on:
   pull_request:
@@ -15,8 +16,9 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*"
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 permissions:
@@ -32,7 +34,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     permissions:
-      # Only the release step on a tag writes; everything else reads.
+      # Only the release steps write; everything else reads.
       contents: write
 
     steps:
@@ -68,11 +70,36 @@ jobs:
           # The DMG is compressed already.
           compression-level: 0
 
-      - name: Attach to release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Attach to the release
+        if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/*.dmg \
-            --title "Blitztext $GITHUB_REF_NAME" \
-            --generate-notes
+          dmg="dist/Blitztext-${TAG}.dmg"
+          mv dist/*.dmg "$dmg"
+          gh release upload "$TAG" "$dmg" --clobber
+          # The install steps once, below what the release says.
+          gh release view "$TAG" --json body --jq .body > "$RUNNER_TEMP/notes.md"
+          if ! grep -q "blitztext-install-notes" "$RUNNER_TEMP/notes.md"; then
+            printf '\n\n' >> "$RUNNER_TEMP/notes.md"
+            cat .github/release-install-notes.md >> "$RUNNER_TEMP/notes.md"
+            gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
+
+      - name: Keep the two newest releases
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEEP: 2
+        run: |
+          # Newest first; the new release and the one before it stay as the way back,
+          # everything older goes with its tag.
+          gh release list --limit 100 --exclude-drafts --json tagName,publishedAt \
+            --jq "sort_by(.publishedAt) | reverse | .[${KEEP}:] | .[].tagName" |
+          while read -r old; do
+            echo "Removing release $old"
+            gh release delete "$old" --yes --cleanup-tag
+          done
