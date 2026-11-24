@@ -5,7 +5,7 @@ name: DMG
 # - a published release (tag such as v1.18.1-1): the DMG is attached to it, and only the two
 #   newest releases stay; older ones go with their tags (see docs/setup.md)
 # - "Run workflow" in the Actions tab: the DMG is an artifact of that run, e.g. to try a branch
-# Merges and pull requests build no DMG.
+# Merges and pull requests build nothing, here or in CI (which runs only by hand too).
 
 on:
   release:
