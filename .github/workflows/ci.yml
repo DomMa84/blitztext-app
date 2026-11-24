@@ -1,16 +1,11 @@
 name: CI
 
-# Builds the app and runs the unit tests on a GitHub Mac for every pull request that changes
-# code. macOS minutes are precious: changes to text files only run nothing, a newer push to the
-# same pull request cancels the run before it, and merging into main runs nothing again (the
-# pull request was checked already). "Run workflow" in the Actions tab checks by hand.
+# Builds the app and runs the unit tests on a GitHub Mac, only by hand: "Run workflow" in the
+# Actions tab. Pull requests and merges start no Mac at all; GitHub's Macs are often busy, and a
+# run that finds none fails and sends an email. A new version is built by the DMG workflow when a
+# release is published; run this first when the unit tests should check that version too.
 
 on:
-  pull_request:
-    paths-ignore:
-      - "**.md"
-      - docs/**
-      - .github/release-install-notes.md
   workflow_dispatch:
 
 permissions:
