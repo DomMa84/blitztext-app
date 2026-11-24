@@ -291,7 +291,7 @@ private struct CustomModeEditor: View {
     private func confirmDelete() {
         let alert = NSAlert()
         alert.messageText = "„\(WorkflowType.customName(mode.wrappedValue))“ löschen?"
-        alert.informativeText = "Das eigene Kürzel wird entfernt. Apps und Websites mit diesem Modus nutzen wieder Blitztext."
+        alert.informativeText = "Das eigene Kürzel wird entfernt. Apps und Websites mit diesem Modus nutzen wieder DoMa Talk."
         alert.addButton(withTitle: "Löschen")
         alert.addButton(withTitle: "Abbrechen")
         alert.buttons.first?.hasDestructiveAction = true

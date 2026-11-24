@@ -253,7 +253,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
                 backing: .buffered,
                 defer: false
             )
-            window.title = "Blitztext Einstellungen"
+            window.title = "DoMa Talk Einstellungen"
             window.isReleasedWhenClosed = false
             window.contentView = NSHostingView(rootView: SettingsContentView(appState: appState))
             window.setContentSize(SettingsContentView.windowSize)
@@ -277,7 +277,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             // progress appears.
             hosting.sizingOptions = [.minSize, .intrinsicContentSize, .maxSize, .preferredContentSize]
             let window = NSWindow(contentViewController: hosting)
-            window.title = "Blitztext einrichten"
+            window.title = "DoMa Talk einrichten"
             window.styleMask = [.titled, .closable, .miniaturizable]
             window.isReleasedWhenClosed = false
             window.delegate = self
@@ -889,7 +889,7 @@ enum MacMeetingCompare {
                     try await model.complete(instruction: instruction, text: text, maxTokens: 1_500)
                 }
                 let summary = try await MeetingSummarizer.summarize(transcript, engine: .automatic, backend: backend)
-                variants.append(("\(variant.name) in Blitztext", Date().timeIntervalSince(modelStart), summary))
+                variants.append(("\(variant.name) in DoMa Talk", Date().timeIntervalSince(modelStart), summary))
             } catch {
                 print("\(variant.name): FEHLER \(error.localizedDescription)")
             }

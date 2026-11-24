@@ -17,7 +17,7 @@ enum WhatsNew {
         Item(
             icon: "globe",
             title: "Englisch",
-            detail: "Diktierst du auf Englisch, bleibt der Text in Blitztext+ und Blitztext :) englisch. Bisher kam er auf Deutsch heraus."
+            detail: "Diktierst du auf Englisch, bleibt der Text in DoMa Talk+ und DoMa Talk :) englisch. Bisher kam er auf Deutsch heraus."
         ),
         Item(
             icon: "waveform",
@@ -42,7 +42,7 @@ struct WhatsNewView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Neu in Blitztext \(WhatsNew.version)")
+                Text("Neu in DoMa Talk \(WhatsNew.version)")
                     .font(BlackboatType.publicSans(20, .bold, relativeTo: .title3))
                 Text("Einmal kurz, dann geht es weiter wie gewohnt.")
                     .font(.ui(12))
@@ -77,13 +77,13 @@ struct WhatsNewView: View {
                     NoticeRow(
                         icon: "arrow.down.circle",
                         title: "Noch ein Schritt",
-                        detail: "Lade einmal ein Modell f\u{00FC}r die Spracherkennung, sonst kann Blitztext nicht transkribieren."
+                        detail: "Lade einmal ein Modell f\u{00FC}r die Spracherkennung, sonst kann DoMa Talk nicht transkribieren."
                     )
                 } else if !appState.canRewrite {
                     NoticeRow(
                         icon: "key",
                         title: "KI-Modi einrichten",
-                        detail: "Ohne Apple Intelligence brauchen Blitztext+, $%&! und :) einen eigenen API-Key."
+                        detail: "Ohne Apple Intelligence brauchen DoMa Talk+, $%&! und :) einen eigenen API-Key."
                     )
                 }
             }

@@ -1,31 +1,34 @@
 <p align="center">
-  <img src="docs/assets/icon.png" width="96" height="96" alt="Blitztext app icon">
+  <img src="docs/assets/doma-talk-icon.png" width="96" height="96" alt="DoMa Talk app icon: a head in profile with three flowing lines leaving its mouth">
 </p>
 
-<h1 align="center">Blitztext</h1>
-
-<p align="center">
-  <b>Speak. Text. Done.</b><br>
-  Dictation for your Mac that runs entirely on your Mac.
-</p>
+<h1 align="center">DoMa Talk</h1>
 
 <p align="center">
-  <a href="https://github.com/cmagnussen/blitztext-app/releases/latest"><img src="https://img.shields.io/github/v/release/cmagnussen/blitztext-app?label=download&color=4F46E5" alt="Latest release"></a>
-  <img src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple" alt="macOS 14 or newer">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563EB" alt="MIT License"></a>
-  <a href="https://github.com/cmagnussen/blitztext-app/actions/workflows/ci.yml"><img src="https://github.com/cmagnussen/blitztext-app/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  Diktat für den Mac, das auf dem Mac läuft. Ein unabhängiger Fork von <a href="https://github.com/cmagnussen/blitztext-app">Blitztext</a>.
 </p>
 
-<p align="center">
-  <a href="https://github.com/cmagnussen/blitztext-app/releases/latest"><b>Download for macOS</b></a> ·
-  <a href="https://blitztext.de">blitztext.de</a> ·
-  <a href="#build-it-yourself">Build it yourself</a>
-</p>
+## Über diesen Fork
 
-<p align="center">
-  <img src="docs/screenshots/menu-bar.png" width="400" alt="Blitztext in the menu bar: dictate, the last text to copy, start a meeting in the room or online, and the modes with their shortcuts">
-  <img src="docs/screenshots/settings-modes.png" width="400" alt="The settings window, Modi: writing style, instructions, emoji density and a mode per app or website">
-</p>
+**DoMa Talk** ist ein persönlicher, unabhängiger Fork von [Blitztext](https://github.com/cmagnussen/blitztext-app) (MIT-Lizenz). Er hat **keine Verbindung zu Blackboat**, den Machern von Blitztext, und wird von ihnen weder unterstützt noch geprüft. Name, Logo und Icon von Blitztext gehören Blackboat ([TRADEMARKS.md](TRADEMARKS.md)); deshalb hat dieser Fork einen eigenen Namen, ein eigenes Icon und eine eigene Bundle-ID (`io.github.domma84.domatalk`).
+
+**Mit Claude Code entstanden:** Die Anpassungen dieses Forks, das DoMa-Talk-Icon und der Name im Code sind mit [Claude Code](https://claude.com/claude-code) von Anthropic entstanden, im Auftrag und nach den Entscheidungen des Fork-Besitzers. Jede Änderung ist als Pull Request nachvollziehbar; die Commits tragen `Co-Authored-By: Claude`, die Pull Requests nennen die KI-Unterstützung. Das Icon zeichnet `scripts/branding/make-icons.py`.
+
+Was dieser Fork gegenüber dem Original ändert:
+
+- Name **DoMa Talk** und Icon (sprechender Kopf), auch in der Menüleiste; eigene Bundle-ID
+- „Eingefügt“ statt „Fertig“ nach dem Diktat
+- Einrichtung beim ersten Start als eigenes Fenster
+- Speicherort der Modelle wählbar, z. B. eine externe SSD
+- DMG-Installer, gebaut auf GitHub; dauerhafte Downloads als Releases, die zwei neuesten bleiben
+- Neue Versionen des Originals werden nur angezeigt, nie installiert; ein wöchentliches Issue listet, was im Original neu ist
+- „Feedback senden“ öffnet ein Issue in diesem Fork statt einer Mail an Blackboat
+
+Bitte melde Fehler dieses Forks hier, nicht beim Original.
+
+---
+
+*Die folgende Beschreibung stammt aus dem Original (Blitztext) und gilt für DoMa Talk sinngemäß. Links auf Downloads und blitztext.de führen zum Original.*
 
 Hold a shortcut, speak, let go. Blitztext turns your speech into text and pastes it where your cursor is. Speech recognition runs on your Mac, the writing modes use Apple Intelligence on your Mac. No account, no server, no audio leaving the device.
 

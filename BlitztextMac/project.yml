@@ -1,6 +1,6 @@
 name: BlitztextMac
 options:
-  bundleIdPrefix: app.blitztext
+  bundleIdPrefix: io.github.domma84
   deploymentTarget:
     macOS: "14.0"
   xcodeVersion: "15.0"
@@ -16,8 +16,9 @@ settings:
     # In-app updates for installs outside Jamf (Sparkle). The feed is the appcast of the
     # latest public GitHub release; the key is the public half of the signing key.
     SPARKLE_FEED_URL: "https://github.com/cmagnussen/blitztext-app/releases/latest/download/appcast.xml"
-    # Name in Finder and the Dock; a design preview builds as "Blitztext Vorschau".
-    APP_DISPLAY_NAME: Blitztext
+    # Name in Finder and the Dock. This fork's own name: the Blitztext name and icon belong to
+    # Blackboat (TRADEMARKS.md), so a published fork uses its own.
+    APP_DISPLAY_NAME: "DoMa Talk"
     SPARKLE_PUBLIC_ED_KEY: "E3+VuN7OgR+preZ8H1a73gmDhNDeqvznjUxxpO8kzMM="
 
 packages:
@@ -62,8 +63,9 @@ targets:
           - BlitztextMac.entitlements
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.blitztext.mac
-        PRODUCT_NAME: Blitztext
+        # Own bundle identifier: macOS treats DoMa Talk as an app of its own, next to Blitztext.
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.domma84.domatalk
+        PRODUCT_NAME: "DoMa Talk"
         INFOPLIST_FILE: Resources/Info.plist
         INFOPLIST_KEY_CFBundleShortVersionString: $(MARKETING_VERSION)
         INFOPLIST_KEY_CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -154,5 +156,5 @@ targets:
       - path: ../BlitztextShared/Meeting/MeetingStore.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.blitztext.mac.tests
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.domma84.domatalk.tests
         GENERATE_INFOPLIST_FILE: YES

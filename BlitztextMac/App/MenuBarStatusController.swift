@@ -90,7 +90,7 @@ final class MenuBarStatusController {
     private func tooltip(for status: MenuBarStatus) -> String {
         switch status {
         case .idle:
-            return "Blitztext ist bereit"
+            return "DoMa Talk ist bereit"
         case .recording(let type):
             return "\(type.displayName): Aufnahme läuft"
         case .processing(let type):
@@ -99,11 +99,11 @@ final class MenuBarStatusController {
             if let type {
                 return "\(type.displayName): Fertig"
             }
-            return "Blitztext: Fertig"
+            return "DoMa Talk: Fertig"
         case .copied:
-            return "Blitztext: Text liegt in der Zwischenablage"
+            return "DoMa Talk: Text liegt in der Zwischenablage"
         case .error(let type, let message):
-            return "\(type?.displayName ?? "Blitztext"): \(message)"
+            return "\(type?.displayName ?? "DoMa Talk"): \(message)"
         case .meeting:
             return "Meeting: Aufnahme l\u{00E4}uft"
         }

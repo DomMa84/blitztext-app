@@ -44,8 +44,8 @@ def draw(scale: int) -> Image.Image:
 
     title = ImageFont.truetype(str(FONTS / "PublicSans-SemiBold.ttf"), 16 * scale)
     note = ImageFont.truetype(str(FONTS / "PublicSans-Regular.ttf"), 12 * scale)
-    pen.text((w / 2, 275 * scale), "Ziehe Blitztext auf den Ordner Programme.", font=title, fill=TEXT, anchor="mm")
-    pen.text((w / 2, 300 * scale), "Danach Blitztext in Programme öffnen.", font=note, fill=MUTED, anchor="mm")
+    pen.text((w / 2, 275 * scale), "Ziehe DoMa Talk auf den Ordner Programme.", font=title, fill=TEXT, anchor="mm")
+    pen.text((w / 2, 300 * scale), "Danach DoMa Talk in Programme \u00f6ffnen.", font=note, fill=MUTED, anchor="mm")
     return image
 
 

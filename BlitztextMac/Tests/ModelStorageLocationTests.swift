@@ -28,20 +28,20 @@ final class ModelStorageLocationTests: XCTestCase {
 
     func testPickedFolderGetsItsOwnModelsFolder() {
         let picked = URL(fileURLWithPath: "/Volumes/SSD", isDirectory: true)
-        XCTAssertEqual(ModelStorageLocation.target(inPicked: picked).path, "/Volumes/SSD/Blitztext Modelle")
+        XCTAssertEqual(ModelStorageLocation.target(inPicked: picked).path, "/Volumes/SSD/DoMa Talk Modelle")
         // Picking that folder itself does not nest a second one.
-        let again = URL(fileURLWithPath: "/Volumes/SSD/Blitztext Modelle", isDirectory: true)
+        let again = URL(fileURLWithPath: "/Volumes/SSD/DoMa Talk Modelle", isDirectory: true)
         XCTAssertEqual(ModelStorageLocation.target(inPicked: again).path, again.path)
     }
 
     func testDriveNameOnlyForExternalDrives() {
-        XCTAssertEqual(ModelStorageLocation.driveName(of: URL(fileURLWithPath: "/Volumes/SSD/Blitztext Modelle")), "SSD")
+        XCTAssertEqual(ModelStorageLocation.driveName(of: URL(fileURLWithPath: "/Volumes/SSD/DoMa Talk Modelle")), "SSD")
         XCTAssertEqual(ModelStorageLocation.driveName(of: URL(fileURLWithPath: "/Volumes/Daten 2/a/b")), "Daten 2")
         XCTAssertNil(ModelStorageLocation.driveName(of: URL(fileURLWithPath: "/Users/someone/Models")))
     }
 
     func testFolderOnUnpluggedDriveIsNotReachable() {
-        let onSSD = URL(fileURLWithPath: "/Volumes/SSD/Blitztext Modelle")
+        let onSSD = URL(fileURLWithPath: "/Volumes/SSD/DoMa Talk Modelle")
         XCTAssertTrue(ModelStorageLocation.isReachable(onSSD, isMountedVolume: { $0 == "/Volumes/SSD" }))
         XCTAssertFalse(ModelStorageLocation.isReachable(onSSD, isMountedVolume: { _ in false }))
         // The Mac's own disk is always there.
@@ -59,7 +59,7 @@ final class ModelStorageLocationTests: XCTestCase {
 
     func testMoveCarriesEveryModelAndClearsTheOldFolder() throws {
         let source = root.appendingPathComponent("old/models")
-        let destination = root.appendingPathComponent("ssd/Blitztext Modelle")
+        let destination = root.appendingPathComponent("ssd/DoMa Talk Modelle")
         try write("weights", to: "parakeet/parakeet-ultra/Encoder.mlmodelc/weight.bin", in: source)
         try write("gemma", to: "llm/gemma-4-e4b/model.safetensors", in: source)
         try write("hidden", to: ".download-123", in: source)

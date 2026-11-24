@@ -128,7 +128,7 @@ final class AppUpdateService {
 
         updaterController.startUpdater()
         didStartUpdater = true
-        statusText = "Blitztext hält sich über Sparkle aktuell."
+        statusText = "DoMa Talk hält sich über Sparkle aktuell."
         canCheckForUpdates = updaterController.updater.canCheckForUpdates
     }
 

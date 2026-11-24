@@ -1,10 +1,14 @@
 import Foundation
 
-/// "Feedback senden": a prepared mail to the Blitztext team with the facts that help to
-/// understand a report. People see the whole mail before it goes out; the app itself sends
-/// nothing and adds no logs.
+/// "Feedback senden": a new issue in this fork's GitHub repository with the facts that help to
+/// understand a report filled in. People see everything and send it themselves on GitHub; the
+/// app sends nothing and adds no logs. The original Blitztext mailed its team at Blackboat;
+/// DoMa Talk is an independent fork, so its feedback goes to the fork and never to them.
 enum FeedbackMail {
-    static let address = "blitztext@blackboat.com"
+    static let repository = "DomMa84/blitztext-app"
+
+    /// Where the feedback goes, as shown to people and copied when the browser cannot open.
+    static var address: String { "https://github.com/\(repository)/issues" }
 
     /// - Parameter details: lines about this app's setup, e.g. speech model and shortcut mode.
     static func url(details: [String] = []) -> URL? {
@@ -12,19 +16,17 @@ enum FeedbackMail {
         let version = info["CFBundleShortVersionString"] as? String ?? "?"
         let build = info["CFBundleVersion"] as? String ?? "?"
         let facts = [
-            "App: Blitztext \(version) (Build \(build)) für \(platform)",
+            "App: DoMa Talk \(version) (Build \(build)) für \(platform)",
             "System: \(systemName) \(ProcessInfo.processInfo.operatingSystemVersionString)",
             "Gerät: \(deviceModel)",
         ] + details
 
-        var components = URLComponents()
-        components.scheme = "mailto"
-        components.path = address
-        components.queryItems = [
-            URLQueryItem(name: "subject", value: "Blitztext Feedback (\(platform) \(version), Build \(build))"),
-            URLQueryItem(name: "body", value: "\n\n\n---\nBitte oberhalb der Linie schreiben. Diese Angaben helfen uns beim Nachvollziehen, du kannst sie auch löschen:\n" + facts.joined(separator: "\n")),
+        var components = URLComponents(string: "https://github.com/\(repository)/issues/new")
+        components?.queryItems = [
+            URLQueryItem(name: "title", value: "Feedback: DoMa Talk \(version) (Build \(build))"),
+            URLQueryItem(name: "body", value: "\n\n\n---\nBitte oberhalb der Linie schreiben. Diese Angaben helfen beim Nachvollziehen, du kannst sie auch löschen:\n" + facts.joined(separator: "\n")),
         ]
-        return components.url
+        return components?.url
     }
 
     private static var platform: String {

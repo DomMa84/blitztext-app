@@ -399,17 +399,18 @@ struct ModeIcon: View {
     }
 }
 
-/// "Blitztext by Blackboat" with the mark.
+/// "DoMa Talk" with its icon and where it comes from. The original showed "Blitztext by
+/// Blackboat" with Blackboat's mark; an independent fork must not carry their brand.
 struct BrandRow: View {
     var body: some View {
         HStack(spacing: 9) {
-            BlackboatMark()
-                .fill(Color.primary)
-                .frame(width: 24, height: 24)
+            Image(nsImage: NSApplication.shared.applicationIconImage)
+                .resizable()
+                .frame(width: 26, height: 26)
             VStack(alignment: .leading, spacing: 0) {
-                Text("Blitztext")
+                Text("DoMa Talk")
                     .font(.ui(15, .bold))
-                Text("by Blackboat")
+                Text("Fork von Blitztext")
                     .font(.ui(11))
                     .foregroundStyle(.secondary)
             }

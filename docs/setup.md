@@ -12,23 +12,23 @@ cd blitztext-app
 ./build.sh --install --run
 ```
 
-The app is installed to `/Applications/Blitztext.app` and appears in the menu bar.
+The app is installed to `/Applications/DoMa Talk.app` and appears in the menu bar.
 
 ### Installer (DMG) without Xcode
 
-The workflow `.github/workflows/dmg.yml` builds `Blitztext-<version>.dmg` on GitHub's Macs, so a Mac with little free space does not need Xcode:
+The workflow `.github/workflows/dmg.yml` builds `DoMa-Talk-<version>.dmg` on GitHub's Macs, so a Mac with little free space does not need Xcode:
 
 A DMG is only built when you decide to: merges and pull requests build none, which saves GitHub's Mac minutes.
 
-- **Actions > DMG > Run workflow** (pick the branch): open the run and download **Blitztext-DMG** under Artifacts (a ZIP that holds the DMG; you must be signed in to GitHub). Good for trying a branch.
-- **A published release** (the permanent download page): the DMG is attached to it as `Blitztext-<tag>.dmg`, with the install steps below the notes. Make one under **Releases > Draft a new release**: a new tag on `main` named after the original's version and a running number, e.g. `v1.18.1-1`, `v1.18.1-2`; then **Publish release**. Artifacts expire after 90 days, releases stay.
+- **Actions > DMG > Run workflow** (pick the branch): open the run and download **DoMa-Talk-DMG** under Artifacts (a ZIP that holds the DMG; you must be signed in to GitHub). Good for trying a branch.
+- **A published release** (the permanent download page): the DMG is attached to it as `DoMa-Talk-<tag>.dmg`, with the install steps below the notes. Make one under **Releases > Draft a new release**: a new tag on `main` named after the original's version and a running number, e.g. `v1.18.1-1`, `v1.18.1-2`; then **Publish release**. Artifacts expire after 90 days, releases stay.
 - **Only the two newest releases stay:** the new one and the one before it, as the way back. Publishing `v1.18.1-3` removes `v1.18.1-1` with its tag, once `v1.18.1-2` has run without trouble long enough for you to move on.
 
 To build the DMG on your own Mac instead: `./build.sh --dmg` writes it to `dist/` (`python3 -m pip install dmgbuild` gives it the window layout).
 
-Open the DMG and drag **Blitztext** onto **Programme**. Any other folder works too, for example on an external SSD; that drive must then be connected whenever Blitztext starts.
+Open the DMG and drag **DoMa Talk** onto **Programme**. Any other folder works too, for example on an external SSD; that drive must then be connected whenever DoMa Talk starts.
 
-These builds are signed ad hoc, not notarized by Apple. The first time you open one, macOS says it could not check the app. Click **Fertig**, open **System Settings > Privacy & Security**, click **Open Anyway** next to Blitztext and confirm. Every new build also needs **Accessibility** again: in Blitztext under Allgemein, click "Freigabe zurücksetzen".
+These builds are signed ad hoc, not notarized by Apple. The first time you open one, macOS says it could not check the app. Click **Fertig**, open **System Settings > Privacy & Security**, click **Open Anyway** next to DoMa Talk and confirm. Every new build also needs **Accessibility** again: in DoMa Talk under Allgemein, click "Freigabe zurücksetzen".
 
 ## 2. Permissions
 
