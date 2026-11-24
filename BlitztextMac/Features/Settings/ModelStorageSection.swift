@@ -6,7 +6,6 @@ import SwiftUI
 struct ModelStorageSection: View {
     @Bindable var appState: AppState
 
-    @State private var isMoving = false
     @State private var usedBytes: Int64?
     @State private var message: String?
     @State private var failed = false
@@ -22,10 +21,7 @@ struct ModelStorageSection: View {
     }
 
     /// No download and no dictation may use the folder while it moves.
-    private var isBusy: Bool {
-        isMoving || appState.isDownloadingLocalModel || LocalModelStore.shared.isDownloading
-            || appState.activeWorkflow?.phase.isActive == true || appState.meeting.isRecording || appState.meeting.isProcessing
-    }
+    private var isBusy: Bool { !appState.canMoveModelStorage }
 
     var body: some View {
         SettingsSection(title: "Speicherort") {
@@ -74,7 +70,7 @@ struct ModelStorageSection: View {
                 .disabled(!FileManager.default.fileExists(atPath: folder.path))
             }
 
-            if isMoving {
+            if appState.isMovingModels {
                 HStack(spacing: 8) {
                     ProgressView().controlSize(.small)
                     Text("Modelle werden verschoben \u{2026} Bei mehreren GB dauert das einige Minuten.")
@@ -107,54 +103,38 @@ struct ModelStorageSection: View {
     }
 
     private func chooseFolder() {
+        guard let picked = Self.pickFolder() else { return }
+        move(to: ModelStorageLocation.target(inPicked: picked))
+    }
+
+    /// Asks for the folder the models go to, e.g. on an external SSD; also used by the setup
+    /// assistant before the first download. Nil when the user cancels.
+    static func pickFolder() -> URL? {
         let panel = NSOpenPanel()
         panel.title = "Speicherort der Modelle"
         panel.message = "W\u{00E4}hle einen Ordner, zum Beispiel auf deiner externen SSD. DoMa Talk legt darin den Ordner \u{201E}\(ModelStorageLocation.folderName)\u{201C} an."
-        panel.prompt = "Hierhin verschieben"
+        panel.prompt = "Hier speichern"
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true
         panel.allowsMultipleSelection = false
-        guard panel.runModal() == .OK, let picked = panel.url else { return }
-        move(to: ModelStorageLocation.target(inPicked: picked))
+        NSApp.activate(ignoringOtherApps: true)
+        guard panel.runModal() == .OK else { return nil }
+        return panel.url
     }
 
-    /// Moves the models to `destination`, nil for the default folder on this Mac. The setting
-    /// changes only once everything arrived; a failed move leaves it on the old folder.
+    /// Moves the models to `destination`, nil for the default folder on this Mac
+    /// (`AppState.moveModelStorage`).
     private func move(to destination: URL?) {
-        guard !isBusy else { return }
-        let source = AppSupportPaths.localModelsDirectoryURL
-        let target = destination ?? AppSupportPaths.defaultLocalModelsDirectoryURL
-        if let destination, !ModelStorageLocation.isReachable(destination) {
-            failed = true
-            message = "Das Laufwerk ist nicht verbunden."
-            return
-        }
-        isMoving = true
+        guard appState.canMoveModelStorage else { return }
         message = nil
         failed = false
         Task {
-            let error: String? = await Task.detached(priority: .userInitiated) {
-                do {
-                    // An unplugged drive has nothing to move: the setting just changes.
-                    if ModelStorageLocation.isReachable(source) {
-                        try ModelStorageMove.move(from: source, to: target)
-                    } else {
-                        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
-                    }
-                    return nil
-                } catch {
-                    return error.localizedDescription
-                }
-            }.value
-            isMoving = false
-            if let error {
+            if let error = await appState.moveModelStorage(to: destination) {
                 failed = true
                 message = "Verschieben hat nicht geklappt: \(error) Die Modelle bleiben, wo sie waren."
                 return
             }
-            ModelStorageLocation.customDirectoryURL = destination
-            appState.modelStorageChanged()
             message = appState.selectedLocalModelIsInstalled
                 ? "Fertig. Die Modelle liegen jetzt hier."
                 : "Fertig. Am neuen Ort fehlt noch die Spracherkennung; lade sie oben unter Spracherkennung."

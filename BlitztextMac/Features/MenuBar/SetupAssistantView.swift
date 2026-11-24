@@ -26,6 +26,8 @@ struct SetupAssistantView: View {
     @State private var microphoneIssue = MicrophoneCheck.issue
     @State private var isResettingAccessibility = false
     @State private var resetFailed = false
+    /// Why moving the models folder did not work, from "Ändern …" in step 3.
+    @State private var storageError: String?
 
     #if DEBUG
     /// Snapshots draw the assistant before anything is set up.
@@ -256,11 +258,14 @@ struct SetupAssistantView: View {
                 Text(appState.localModelDownloadStatusText ?? "L\u{00E4}dt ...")
                     .font(.ui(11))
                     .foregroundStyle(.secondary)
+                storageRow(canChange: false)
             }
         } else {
             VStack(alignment: .leading, spacing: 4) {
                 Button("\(modelName) laden") { appState.installSelectedLocalModel() }
                     .buttonStyle(actionStyle(for: 3))
+                    .disabled(appState.isMovingModels)
+                storageRow(canChange: true)
                 if let error = appState.localModelDownloadErrorText {
                     Text(error)
                         .font(.ui(11))
@@ -268,6 +273,57 @@ struct SetupAssistantView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
+        }
+    }
+
+    /// Where the model is saved, with "Ändern …" before the download: on a Mac with little
+    /// room it can go straight to an external SSD (also under Einstellungen > Modelle).
+    @ViewBuilder
+    private func storageRow(canChange: Bool) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: isCustomStorage ? "externaldrive" : "internaldrive")
+                .font(.ui(10.5, .semibold))
+                .foregroundStyle(.secondary)
+            Text("Speicherort: \(storageLabel)")
+                .font(.ui(11))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .help(AppSupportPaths.localModelsDirectoryURL.path)
+            if appState.isMovingModels {
+                ProgressView().controlSize(.mini)
+            } else if canChange {
+                Button("\u{00C4}ndern \u{2026}") { chooseStorage() }
+                    .font(.ui(11))
+                    .buttonStyle(.subtle)
+                    .disabled(!appState.canMoveModelStorage)
+            }
+        }
+        if let storageError {
+            Text(storageError)
+                .font(.ui(11))
+                .foregroundStyle(BlitztextTheme.danger)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var isCustomStorage: Bool {
+        _ = appState.modelStorageRevision
+        return ModelStorageLocation.customDirectoryURL != nil
+    }
+
+    /// "dieser Mac", or the drive (e.g. "SSD"), or the folder's name on this Mac.
+    private var storageLabel: String {
+        _ = appState.modelStorageRevision
+        guard let custom = ModelStorageLocation.customDirectoryURL else { return "dieser Mac" }
+        return ModelStorageLocation.driveName(of: custom) ?? custom.deletingLastPathComponent().lastPathComponent
+    }
+
+    private func chooseStorage() {
+        guard let picked = ModelStorageSection.pickFolder() else { return }
+        storageError = nil
+        Task {
+            storageError = await appState.moveModelStorage(to: ModelStorageLocation.target(inPicked: picked))
         }
     }
 
