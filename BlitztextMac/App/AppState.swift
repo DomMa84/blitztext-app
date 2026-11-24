@@ -407,6 +407,50 @@ final class AppState {
         localModelDownloadStatusText = nil
     }
 
+    /// The models are being moved to another folder (`moveModelStorage`).
+    var isMovingModels = false
+
+    /// No download, dictation or meeting may use the models folder while it moves.
+    var canMoveModelStorage: Bool {
+        !isMovingModels && !isDownloadingLocalModel && !LocalModelStore.shared.isDownloading
+            && activeWorkflow?.phase.isActive != true && !meeting.isRecording && !meeting.isProcessing
+    }
+
+    /// Moves the models to `destination`, nil for the default folder on this Mac, from the
+    /// settings or the setup assistant. The setting changes only once everything arrived; a
+    /// failed move leaves the models and the setting where they were. Before the first
+    /// download there is nothing to move: the folder is made and the download goes there.
+    /// - Returns: Why it did not work, nil when it did.
+    func moveModelStorage(to destination: URL?) async -> String? {
+        guard canMoveModelStorage else {
+            return "Gerade l\u{00E4}uft ein Download, ein Diktat oder ein Meeting. Bitte danach noch einmal."
+        }
+        if let destination, !ModelStorageLocation.isReachable(destination) {
+            return "Das Laufwerk ist nicht verbunden."
+        }
+        let source = AppSupportPaths.localModelsDirectoryURL
+        let target = destination ?? AppSupportPaths.defaultLocalModelsDirectoryURL
+        isMovingModels = true
+        defer { isMovingModels = false }
+        let error: String? = await Task.detached(priority: .userInitiated) {
+            do {
+                // An unplugged drive has nothing to move: the setting just changes.
+                if ModelStorageLocation.isReachable(source) {
+                    try ModelStorageMove.move(from: source, to: target)
+                } else {
+                    try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+                }
+                return nil
+            } catch {
+                return error.localizedDescription
+            }
+        }.value
+        if let error { return error }
+        ModelStorageLocation.customDirectoryURL = destination
+        modelStorageChanged()
+        return nil
+    }
+
     var isDownloadingLocalModel: Bool {
         localModelDownloadProgress != nil
     }
